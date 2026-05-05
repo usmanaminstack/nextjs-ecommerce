@@ -24,12 +24,17 @@ export default function KuickPayReturn() {
         setCart(cartStr ? JSON.parse(cartStr) : []);
         setOrder(JSON.parse(orderStr));
 
-        const companyId = '100000041';
-        const securedKey = 'O7eiNqeoudvnEhMF31p+9YpTzTYinmFyIG6mCO2Y8V4=';
+        const companyId = '10010';
+        const securedKey = 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=';
+        
+      // const companyId = '02429';
+      // const securedKey = 'VLqK98MkGK+KrZR7XL/vD/Vbwdvo1nulJj9bTCHA1tE=';
+  //             const companyId = '100000041';
+  // const securedKey = 'O7eiNqeoudvnEhMF31p+9YpTzTYinmFyIG6mCO2Y8V4=';
         const basicAuth = btoa(`${companyId}:${securedKey}`);
 
         const res = await fetch(
-          'https://sandbox-api.kuickpay.com/checkout/api/status',
+          'https://prod-api.kuickpay.com/checkout/api/status',
           {
             method: 'POST',
             headers: {
