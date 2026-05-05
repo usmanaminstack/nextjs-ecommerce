@@ -14,7 +14,9 @@ import {
   Zap,
   CheckCircle2,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 
 /* ================= CONFIG DEFAULTS ================= */
@@ -26,7 +28,8 @@ const PRESETS = {
     baseUrl: 'http://localhost:3000',
     companyId: '10010',
     securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=',
-    returnUrl: 'http://localhost:3000/kuickpay-return'
+    returnUrl: 'http://localhost:3000/kuickpay-return',
+    debugRedirectUrl: ''
   },
   uat: {
     name: 'UAT',
@@ -34,7 +37,8 @@ const PRESETS = {
     baseUrl: 'https://sandbox-api.kuickpay.com',
     companyId: '10010',
     securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=',
-    returnUrl: 'http://localhost:3000/kuickpay-return'
+    returnUrl: 'http://localhost:3000/kuickpay-return',
+    debugRedirectUrl: ''
   },
   prod: {
     name: 'Prod',
@@ -42,7 +46,9 @@ const PRESETS = {
     baseUrl: 'https://prod-api.kuickpay.com',
     companyId: '10010',
     securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=',
-    returnUrl: 'http://localhost:3000/kuickpay-return'
+    returnUrl: 'http://localhost:3000/kuickpay-return',
+    debugRedirectUrl: '',
+    manualMode: false
   }
 };
 
@@ -78,7 +84,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [toast, setToast] = useState(null);
-
+  const [checkoutResult, setCheckoutResult] = useState(null);
+  
   // Merchant Settings State
   const [config, setConfig] = useState(PRESETS.uat);
   const [env, setEnv] = useState('uat');
@@ -198,7 +205,15 @@ export default function Home() {
         timestamp
       }));
 
-      window.location.href = data.responseData.redirectURL;
+      if (config.debugRedirectUrl || config.manualMode) {
+        setCheckoutResult({
+          gatewayUrl: data.responseData.redirectURL,
+          customUrl: config.debugRedirectUrl || ''
+        });
+        showToast('Session created! Redirection paused.');
+      } else {
+        window.location.href = data.responseData.redirectURL;
+      }
 
     } catch (err) {
       console.error(err);
@@ -212,6 +227,87 @@ export default function Home() {
     <div className="page-wrapper">
       <AnimatePresence>
         {toast && <Toast key="toast" {...toast} />}
+        
+        {checkoutResult && (
+          <div className="drawer-overlay z-200" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="glass p-8 rounded-[32px] w-full max-w-lg shadow-[0_0_100px_rgba(99,102,241,0.2)]"
+            >
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-bold text-white">Manual Redirection</h2>
+                <button onClick={() => setCheckoutResult(null)} className="p-2 hover:bg-white/5 rounded-xl text-slate-400">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">API Response URL</label>
+                    <button 
+                      className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                      onClick={() => {
+                        navigator.clipboard.writeText(checkoutResult.gatewayUrl);
+                        showToast('URL copied to clipboard!');
+                      }}
+                    >
+                      <Copy size={12} /> COPY
+                    </button>
+                  </div>
+                  <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 mb-2 group relative">
+                    <p className="text-xs text-emerald-400 font-mono break-all line-clamp-2 pr-8">{checkoutResult.gatewayUrl}</p>
+                    <a href={checkoutResult.gatewayUrl} target="_blank" className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500/50 hover:text-emerald-500 transition-colors">
+                      <ExternalLink size={14} />
+                    </a>
+                  </div>
+                  <button 
+                    className="btn btn-primary w-full py-4 text-sm gap-2"
+                    onClick={() => window.location.href = checkoutResult.gatewayUrl}
+                  >
+                    Go to Gateway <ArrowRight size={16} />
+                  </button>
+                </div>
+
+                {(checkoutResult.customUrl) && (
+                  <>
+                    <div className="flex items-center gap-4">
+                      <div className="h-[1px] flex-grow bg-white/5" />
+                      <span className="text-[10px] font-bold text-slate-600 uppercase">OR</span>
+                      <div className="h-[1px] flex-grow bg-white/5" />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Your Custom URL</label>
+                        <button 
+                          className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText(checkoutResult.customUrl);
+                            showToast('URL copied to clipboard!');
+                          }}
+                        >
+                          <Copy size={12} /> COPY
+                        </button>
+                      </div>
+                      <div className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 mb-2">
+                        <p className="text-xs text-indigo-400 font-mono break-all line-clamp-2">{checkoutResult.customUrl}</p>
+                      </div>
+                      <button 
+                        className="btn glass w-full py-4 text-sm gap-2 text-white border-indigo-500/20"
+                        onClick={() => window.location.href = checkoutResult.customUrl}
+                      >
+                        Go to Custom URL <ArrowRight size={16} />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       </AnimatePresence>
 
       {/* ================= HEADER ================= */}
@@ -516,6 +612,43 @@ export default function Home() {
                         setEnv('custom');
                       }}
                     />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Manual Redirection Mode</span>
+                      <input 
+                        type="checkbox" 
+                        className="hidden"
+                        checked={config.manualMode || false}
+                        onChange={e => {
+                          setConfig({ ...config, manualMode: e.target.checked });
+                          setEnv('custom');
+                        }}
+                      />
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${config.manualMode ? 'bg-indigo-500' : 'bg-slate-800 border border-white/10'}`}>
+                        <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${config.manualMode ? 'left-6' : 'left-1'}`} />
+                      </div>
+                    </label>
+                    <p className="text-[10px] text-slate-600 mt-2 italic">
+                      Always show the redirection links before moving to the gateway.
+                    </p>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Manual Debug URL (Optional)</label>
+                    <input
+                      className="form-control font-mono text-sm"
+                      placeholder="Show manual links instead of auto-redirect"
+                      value={config.debugRedirectUrl || ''}
+                      onChange={e => {
+                        setConfig({ ...config, debugRedirectUrl: e.target.value });
+                        setEnv('custom');
+                      }}
+                    />
+                    <p className="text-[10px] text-slate-500 mt-2 italic">
+                      If filled, checkout will show a choice between API URL and this URL.
+                    </p>
                   </div>
                 </div>
               </div>
