@@ -87,7 +87,7 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [checkoutResult, setCheckoutResult] = useState(null);
-  
+
   // Merchant Settings State
   const [config, setConfig] = useState(PRESETS.uat);
   const [env, setEnv] = useState('uat');
@@ -229,10 +229,10 @@ export default function Home() {
     <div className="page-wrapper">
       <AnimatePresence>
         {toast && <Toast key="toast" {...toast} />}
-        
+
         {checkoutResult && (
           <div className="drawer-overlay z-200" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="glass p-8 rounded-[32px] w-full max-w-lg shadow-[0_0_100px_rgba(99,102,241,0.2)]"
@@ -248,7 +248,7 @@ export default function Home() {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">API Response URL</label>
-                    <button 
+                    <button
                       className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
                       onClick={() => {
                         navigator.clipboard.writeText(checkoutResult.gatewayUrl);
@@ -264,7 +264,7 @@ export default function Home() {
                       <ExternalLink size={14} />
                     </a>
                   </div>
-                  <button 
+                  <button
                     className="btn btn-primary w-full py-4 text-sm gap-2"
                     onClick={() => window.location.href = checkoutResult.gatewayUrl}
                   >
@@ -283,7 +283,7 @@ export default function Home() {
                     <div>
                       <div className="flex justify-between items-center mb-3">
                         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Your Custom URL</label>
-                        <button 
+                        <button
                           className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
                           onClick={() => {
                             navigator.clipboard.writeText(checkoutResult.customUrl);
@@ -296,7 +296,7 @@ export default function Home() {
                       <div className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 mb-2">
                         <p className="text-xs text-indigo-400 font-mono break-all line-clamp-2">{checkoutResult.customUrl}</p>
                       </div>
-                      <button 
+                      <button
                         className="btn glass w-full py-4 text-sm gap-2 text-white border-indigo-500/20"
                         onClick={() => window.location.href = checkoutResult.customUrl}
                       >
@@ -618,8 +618,8 @@ export default function Home() {
                   <div className="form-group">
                     <label className="flex justify-between items-center cursor-pointer group">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Manual Redirection Mode</span>
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         className="hidden"
                         checked={config.manualMode || false}
                         onChange={e => {
