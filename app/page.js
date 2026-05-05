@@ -29,7 +29,8 @@ const PRESETS = {
     companyId: '10010',
     securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=',
     returnUrl: 'http://localhost:3000/kuickpay-return',
-    debugRedirectUrl: ''
+    debugRedirectUrl: '',
+    manualMode: false
   },
   uat: {
     name: 'UAT',
@@ -38,7 +39,8 @@ const PRESETS = {
     companyId: '10010',
     securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=',
     returnUrl: 'http://localhost:3000/kuickpay-return',
-    debugRedirectUrl: ''
+    debugRedirectUrl: '',
+    manualMode: false
   },
   prod: {
     name: 'Prod',
@@ -307,7 +309,6 @@ export default function Home() {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
       </AnimatePresence>
 
       {/* ================= HEADER ================= */}
