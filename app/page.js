@@ -87,6 +87,7 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [checkoutResult, setCheckoutResult] = useState(null);
+  const [showRawResponse, setShowRawResponse] = useState(false);
 
   // Merchant Settings State
   const [config, setConfig] = useState(PRESETS.uat);
@@ -210,7 +211,8 @@ export default function Home() {
       if (config.debugRedirectUrl || config.manualMode) {
         setCheckoutResult({
           gatewayUrl: data.responseData.redirectURL,
-          customUrl: config.debugRedirectUrl || ''
+          customUrl: config.debugRedirectUrl || '',
+          raw: data
         });
         showToast('Session created! Redirection paused.');
       } else {
@@ -238,74 +240,128 @@ export default function Home() {
               className="glass p-8 rounded-[32px] w-full max-w-lg shadow-[0_0_100px_rgba(99,102,241,0.2)]"
             >
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold text-white">Manual Redirection</h2>
-                <button onClick={() => setCheckoutResult(null)} className="p-2 hover:bg-white/5 rounded-xl text-slate-400">
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="space-y-6">
                 <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">API Response URL</label>
-                    <button
-                      className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
-                      onClick={() => {
-                        navigator.clipboard.writeText(checkoutResult.gatewayUrl);
-                        showToast('URL copied to clipboard!');
-                      }}
-                    >
-                      <Copy size={12} /> COPY
-                    </button>
-                  </div>
-                  <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 mb-2 group relative">
-                    <p className="text-xs text-emerald-400 font-mono break-all line-clamp-2 pr-8">{checkoutResult.gatewayUrl}</p>
-                    <a href={checkoutResult.gatewayUrl} target="_blank" className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500/50 hover:text-emerald-500 transition-colors">
-                      <ExternalLink size={14} />
-                    </a>
-                  </div>
-                  <button
-                    className="btn btn-primary w-full py-4 text-sm gap-2"
-                    onClick={() => window.location.href = checkoutResult.gatewayUrl}
+                  <h2 className="text-2xl font-bold text-white">Manual Redirection</h2>
+                  <p className="text-xs text-slate-500 font-medium mt-1">Session created successfully</p>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setShowRawResponse(!showRawResponse)}
+                    className={`p-2 rounded-xl transition-colors ${showRawResponse ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+                    title="View Raw Response"
                   >
-                    Go to Gateway <ArrowRight size={16} />
+                    <div className="font-mono text-[10px] font-bold">JSON</div>
+                  </button>
+                  <button onClick={() => { setCheckoutResult(null); setShowRawResponse(false); }} className="p-2 hover:bg-white/5 rounded-xl text-slate-400">
+                    <X size={20} />
                   </button>
                 </div>
+              </div>
 
-                {(checkoutResult.customUrl) && (
-                  <>
-                    <div className="flex items-center gap-4">
-                      <div className="h-[1px] flex-grow bg-white/5" />
-                      <span className="text-[10px] font-bold text-slate-600 uppercase">OR</span>
-                      <div className="h-[1px] flex-grow bg-white/5" />
+              <AnimatePresence mode="wait">
+                {showRawResponse ? (
+                  <motion.div
+                    key="raw"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-4"
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">API Response Payload</label>
+                      <button 
+                        className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                        onClick={() => {
+                          navigator.clipboard.writeText(JSON.stringify(checkoutResult.raw, null, 2));
+                          showToast('JSON copied to clipboard!');
+                        }}
+                      >
+                        <Copy size={12} /> COPY JSON
+                      </button>
                     </div>
-
+                    <div className="p-4 bg-slate-900 rounded-2xl border border-white/5 max-h-[300px] overflow-y-auto custom-scrollbar">
+                      <pre className="text-[10px] text-indigo-300 font-mono leading-relaxed whitespace-pre-wrap">
+                        {JSON.stringify(checkoutResult.raw, null, 2)}
+                      </pre>
+                    </div>
+                    <button 
+                      className="btn glass w-full py-4 text-sm gap-2 text-white border-white/5"
+                      onClick={() => setShowRawResponse(false)}
+                    >
+                      Back to Redirection
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="links"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-6"
+                  >
                     <div>
                       <div className="flex justify-between items-center mb-3">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Your Custom URL</label>
-                        <button
+                        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">API Response URL</label>
+                        <button 
                           className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
                           onClick={() => {
-                            navigator.clipboard.writeText(checkoutResult.customUrl);
+                            navigator.clipboard.writeText(checkoutResult.gatewayUrl);
                             showToast('URL copied to clipboard!');
                           }}
                         >
                           <Copy size={12} /> COPY
                         </button>
                       </div>
-                      <div className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 mb-2">
-                        <p className="text-xs text-indigo-400 font-mono break-all line-clamp-2">{checkoutResult.customUrl}</p>
+                      <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 mb-2 group relative">
+                        <p className="text-xs text-emerald-400 font-mono break-all line-clamp-2 pr-8">{checkoutResult.gatewayUrl}</p>
+                        <a href={checkoutResult.gatewayUrl} target="_blank" className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500/50 hover:text-emerald-500 transition-colors">
+                          <ExternalLink size={14} />
+                        </a>
                       </div>
-                      <button
-                        className="btn glass w-full py-4 text-sm gap-2 text-white border-indigo-500/20"
-                        onClick={() => window.location.href = checkoutResult.customUrl}
+                      <button 
+                        className="btn btn-primary w-full py-4 text-sm gap-2"
+                        onClick={() => window.location.href = checkoutResult.gatewayUrl}
                       >
-                        Go to Custom URL <ArrowRight size={16} />
+                        Go to Gateway <ArrowRight size={16} />
                       </button>
                     </div>
-                  </>
+
+                    {(checkoutResult.customUrl) && (
+                      <>
+                        <div className="flex items-center gap-4">
+                          <div className="h-[1px] flex-grow bg-white/5" />
+                          <span className="text-[10px] font-bold text-slate-600 uppercase">OR</span>
+                          <div className="h-[1px] flex-grow bg-white/5" />
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between items-center mb-3">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Your Custom URL</label>
+                            <button 
+                              className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                              onClick={() => {
+                                navigator.clipboard.writeText(checkoutResult.customUrl);
+                                showToast('URL copied to clipboard!');
+                              }}
+                            >
+                              <Copy size={12} /> COPY
+                            </button>
+                          </div>
+                          <div className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 mb-2">
+                            <p className="text-xs text-indigo-400 font-mono break-all line-clamp-2">{checkoutResult.customUrl}</p>
+                          </div>
+                          <button 
+                            className="btn glass w-full py-4 text-sm gap-2 text-white border-indigo-500/20"
+                            onClick={() => window.location.href = checkoutResult.customUrl}
+                          >
+                            Go to Custom URL <ArrowRight size={16} />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
                 )}
-              </div>
+              </AnimatePresence>
             </motion.div>
           </div>
         )}
