@@ -217,7 +217,8 @@ body {
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .drawer-overlay {

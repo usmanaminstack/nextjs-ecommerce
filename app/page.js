@@ -418,7 +418,7 @@ export default function Home() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="drawer"
+              className="drawer custom-scrollbar"
             >
               <div className="flex justify-between items-center mb-8">
                 <div>
@@ -433,7 +433,7 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+              <div className="pr-2 custom-scrollbar">
                 <div className="form-group">
                   <label>Environment Profile</label>
                   <div className="preset-grid">
