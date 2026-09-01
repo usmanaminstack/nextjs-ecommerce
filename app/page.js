@@ -21,7 +21,7 @@ const PRESETS = {
 };
 
 const products = [
-  { id: 1, name: 'Pro Fountain Pen', price: 5, image: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?q=80&w=800' },
+  { id: 1, name: 'Pro Fountain Pen', price: 2, image: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?q=80&w=800' },
   { id: 2, name: 'Leather Journal', price: 10, image: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?q=80&w=800' },
   { id: 3, name: 'Minimalist Stapler', price: 52, image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=800' },
   { id: 4, name: 'Matte Black Mug', price: 100, image: 'https://images.unsplash.com/photo-1517705008128-361805f42e86?q=80&w=800' },
