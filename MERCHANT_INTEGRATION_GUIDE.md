@@ -89,11 +89,47 @@ After the payment process, KuickPay will redirect the user back to your `returnu
 - `orderid`: The ID you provided.
 - `sessionid`: The KuickPay session ID.
 
-**Note:** You should always verify the payment status on your server by calling the Transaction Inquiry API (if available) before fulfilling the order.
+**Note:** You should always verify the payment status on your server by calling the Transaction Inquiry API before fulfilling the order.
+
+---
+
+## 6. Step 4: Verify Payment Status (Transaction Inquiry)
+
+To securely verify the final transaction status, your server should call the Transaction Inquiry API. **Always perform this check on your backend server** to prevent exposing your `SecuredKey`.
+
+**Endpoint:** `POST /checkout/api/status`
+
+### Authentication
+Use **Basic Auth** with your `CompanyID` as the username and `SecuredKey` as the password.
+
+```http
+Authorization: Basic base64(CompanyID:SecuredKey)
+Content-Type: application/json
+```
+
+### Request Payload
+Send the session object received during Step 2:
+```json
+{
+  "sessionID": "ABC-123-XYZ",
+  "redirectURL": "https://gateway.kuickpay.com/pay?session=ABC-123-XYZ",
+  "companyID": "10010"
+}
+```
+
+### Response
+Returns the status details of the transaction. A `responseCode` of `"00"` indicates success.
+```json
+{
+  "responseCode": "00",
+  "responseDescription": "Transaction Successful",
+  "transactionId": "TXN-78910"
+}
+```
 
 ---
 
 ## Security Best Practices
-- **Never expose your Secured Key** on the frontend. Perform session creation on your backend server.
+- **Never expose your Secured Key** on the frontend. Perform session creation and transaction inquiry on your backend server.
 - **Validate the Amount** on the return page to ensure it matches your records.
 - **Use HTTPS** for all API communication.
