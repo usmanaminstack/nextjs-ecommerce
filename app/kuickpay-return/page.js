@@ -111,7 +111,7 @@ export default function KuickPayReturn() {
 
             <div className="total-row">
               <span className="receipt-total-label">Total paid</span>
-              <span className="total-value mono">PKR {money(paymentSession?.amountpayable || 0)}</span>
+              <span className="total-value mono">AED {money(paymentSession?.amountpayable || 0)}</span>
             </div>
           </div>
           <div className="torn-edge" />

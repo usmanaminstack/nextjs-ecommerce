@@ -242,7 +242,7 @@ export default function Home() {
               <div className="product-row">
                 <div>
                   <p className="product-name">{p.name}</p>
-                  <p className="product-price mono">PKR {money(p.price)}</p>
+                  <p className="product-price mono">AED {money(p.price)}</p>
                 </div>
                 <button className="add-btn" onClick={() => addToCart(p)}>
                   <Plus size={14} />
@@ -278,7 +278,7 @@ export default function Home() {
                   <div key={i.id} className="receipt-row">
                     <div className="receipt-item-info">
                       <p className="receipt-item-name">{i.name}</p>
-                      <p className="receipt-item-unit mono">PKR {money(i.price)} each</p>
+                      <p className="receipt-item-unit mono">AED {money(i.price)} each</p>
                     </div>
                     <div className="qty-control">
                       <button className="qty-btn" onClick={() => updateQty(i.id, -1)}><Minus size={12} /></button>
@@ -295,7 +295,7 @@ export default function Home() {
             {cart.length > 0 && (
               <div className="receipt-total">
                 <span className="receipt-total-label">Total</span>
-                <span className="receipt-total-value mono">PKR {money(total)}</span>
+                <span className="receipt-total-value mono">AED {money(total)}</span>
               </div>
             )}
           </div>
