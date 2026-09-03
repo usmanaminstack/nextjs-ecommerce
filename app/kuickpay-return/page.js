@@ -30,12 +30,12 @@ export default function KuickPayReturn() {
         setOrder(parsedOrder);
 
         const { companyId, securedKey, baseUrl } = config;
-        const { orderid, amount, amountpayable } = parsedOrder;
+        const { orderid, amount, amountpayable, signature } = parsedOrder;
 
         // Sign a fresh status request the same way checkout signs a session request
         const timestamp = new Date().toISOString();
         const canonical = `${companyId}|${orderid}|${amount}|${amountpayable}|${timestamp}`;
-        const signature = CryptoJS.HmacSHA256(canonical, securedKey).toString(CryptoJS.enc.Base64);
+        // const signature = CryptoJS.HmacSHA256(canonical, securedKey).toString(CryptoJS.enc.Base64);
 
         const statusPayload = {
           sessionid: sessionID,

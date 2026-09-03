@@ -135,7 +135,8 @@ export default function Home() {
   orderid: orderId,
   amount: Number(amountValue),
   amountpayable: Number(amountValue),
-  timestamp
+  timestamp,
+   signature
 }));
 sessionStorage.setItem('kuickpaySession', data?.responseData?.sessionID);
 
