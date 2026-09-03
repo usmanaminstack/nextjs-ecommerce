@@ -15,9 +15,9 @@ const LogoMark = ({ size = 26 }) => (
 );
 
 const PRESETS = {
-  local: { name: 'Local', merchantName: 'KP Local Sandbox', baseUrl: 'http://localhost:3000', companyId: '10010', securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=', returnUrl: 'http://localhost:3000/kuickpay-return', debugRedirectUrl: '', manualMode: false },
-  uat: { name: 'UAT', merchantName: 'KP UAT Hub', baseUrl: 'https://sandbox-api.kuickpay.com', companyId: '02429', securedKey: 'xWX+A8qbYkLgHf3e/pu6PZiycOGc0C/YXOr3XislvxI=', returnUrl: 'http://localhost:3000/kuickpay-return', debugRedirectUrl: '', manualMode: false },
-  prod: { name: 'Prod', merchantName: 'KP Enterprise', baseUrl: 'https://prod-api.kuickpay.com', companyId: '10010', securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=', returnUrl: 'http://localhost:3000/kuickpay-return', debugRedirectUrl: '', manualMode: false }
+  local: { name: 'Local', merchantName: 'KP Local Sandbox', baseUrl: 'http://localhost:3000', companyId: '10010', securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=', returnUrl: 'https://nextjs-ecommerce-umber-beta.vercel.app/kuickpay-return', debugRedirectUrl: '', manualMode: false },
+  uat: { name: 'UAT', merchantName: 'KP UAT Hub', baseUrl: 'https://sandbox-api.kuickpay.com', companyId: '02429', securedKey: 'xWX+A8qbYkLgHf3e/pu6PZiycOGc0C/YXOr3XislvxI=', returnUrl: 'https://nextjs-ecommerce-umber-beta.vercel.app/kuickpay-return', debugRedirectUrl: '', manualMode: false },
+  prod: { name: 'Prod', merchantName: 'KP Enterprise', baseUrl: 'https://prod-api.kuickpay.com', companyId: '10010', securedKey: 'JNyb6+qG3UFJ2Gt6tnJxSyxgtuduP4gJEzx/KbXC0YA=', returnUrl: 'https://nextjs-ecommerce-umber-beta.vercel.app/kuickpay-return', debugRedirectUrl: '', manualMode: false }
 };
 
 const products = [
