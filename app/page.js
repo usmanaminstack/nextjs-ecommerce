@@ -131,7 +131,13 @@ export default function Home() {
 
       if (!data?.responseData?.redirectURL) throw new Error(data?.message || 'Gateway error');
 
-      sessionStorage.setItem('kp_order', JSON.stringify({ orderid: orderId, amount: Number(amountValue), timestamp }));
+    sessionStorage.setItem('kp_order', JSON.stringify({
+  orderid: orderId,
+  amount: Number(amountValue),
+  amountpayable: Number(amountValue),
+  timestamp
+}));
+sessionStorage.setItem('kuickpaySession', data?.responseData?.sessionID);
 
       if (config.debugRedirectUrl || config.manualMode) {
         setCheckoutResult({ gatewayUrl: data.responseData.redirectURL, customUrl: config.debugRedirectUrl || '', raw: data });

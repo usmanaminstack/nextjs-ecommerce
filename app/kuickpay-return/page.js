@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import CryptoJS from 'crypto-js';
 import { CheckCircle2, XCircle, ArrowLeft, ShoppingBag } from 'lucide-react';
 
 const money = (n) => Number(n).toLocaleString('en-PK', { minimumFractionDigits: 0 });
@@ -8,35 +9,49 @@ export default function KuickPayReturn() {
   const [statusResponse, setStatusResponse] = useState(null);
   const [cart, setCart] = useState([]);
   const [order, setOrder] = useState(null);
-  const [paymentSession, setPaymentSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const runStatusCheck = async () => {
       try {
-        const sessionStr = sessionStorage.getItem('kuickpaySession');
+        const sessionID = sessionStorage.getItem('kuickpaySession');
         const cartStr = sessionStorage.getItem('kp_cart');
         const orderStr = sessionStorage.getItem('kp_order');
         const configStr = localStorage.getItem('kp_merchant_config');
 
-        if (!sessionStr || !orderStr) throw new Error('Payment session expired');
+        if (!sessionID || !orderStr) throw new Error('Payment session expired');
         if (!configStr) throw new Error('Merchant configuration missing');
 
-        const session = JSON.parse(sessionStr);
         const config = JSON.parse(configStr);
+        const parsedOrder = JSON.parse(orderStr);
 
-        setPaymentSession(session);
         setCart(cartStr ? JSON.parse(cartStr) : []);
-        setOrder(JSON.parse(orderStr));
+        setOrder(parsedOrder);
 
         const { companyId, securedKey, baseUrl } = config;
-        const basicAuth = btoa(`${companyId}:${securedKey}`);
+        const { orderid, amount, amountpayable } = parsedOrder;
 
+        // Sign a fresh status request the same way checkout signs a session request
+        const timestamp = new Date().toISOString();
+        const canonical = `${companyId}|${orderid}|${amount}|${amountpayable}|${timestamp}`;
+        const signature = CryptoJS.HmacSHA256(canonical, securedKey).toString(CryptoJS.enc.Base64);
+
+        const statusPayload = {
+          sessionid: sessionID,
+          companyid: companyId,
+          orderid,
+          amount,
+          amountpayable,
+          timestamp,
+          signature
+        };
+
+        const basicAuth = btoa(`${companyId}:${securedKey}`);
         const res = await fetch(`${baseUrl}/checkout/api/status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + basicAuth },
-          body: JSON.stringify(session)
+          body: JSON.stringify(statusPayload)
         });
 
         const data = await res.json();
@@ -111,7 +126,7 @@ export default function KuickPayReturn() {
 
             <div className="total-row">
               <span className="receipt-total-label">Total paid</span>
-              <span className="total-value mono">AED {money(paymentSession?.amountpayable || 0)}</span>
+              <span className="total-value mono">AED {money(order?.amountpayable || 0)}</span>
             </div>
           </div>
           <div className="torn-edge" />
