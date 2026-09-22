@@ -52,8 +52,8 @@ export default function Home() {
   const [toast, setToast] = useState(null);
   const [checkoutResult, setCheckoutResult] = useState(null);
   const [showRawResponse, setShowRawResponse] = useState(false);
-  const [config, setConfig] = useState(PRESETS.uat);
-  const [env, setEnv] = useState('uat');
+  const [config, setConfig] = useState(PRESETS.prod);
+  const [env, setEnv] = useState('prod');
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
