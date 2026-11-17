@@ -35,7 +35,7 @@ const PRESETS = {
     name: 'UAT',
     merchantName: 'KP UAT Hub',
     baseUrl: 'https://sandbox-api.kuickpay.com',
-    checkoutUrl: 'https://testcheckout.kuickpay.com',
+    checkoutUrl: 'https://uatpayments.kuickpay.com/',
     checkoutMode: 'modal',
     companyId: '02429',
     securedKey: 'xWX+A8qbYkLgHf3e/pu6PZiycOGc0C/YXOr3XislvxI=',
