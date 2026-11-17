@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KuickPay Embedded Checkout — Merchant Integration Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 14mm 14mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 11pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Cover / Header Section */
+    .header-banner {
+      background: linear-gradient(135deg, #091338 0%, #1230C4 60%, #2F8FEF 100%);
+      color: #ffffff;
+      padding: 32px 36px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 9pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+
+    .header-banner h1 {
+      margin: 0 0 8px 0;
+      font-size: 24pt;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .header-banner p {
+      margin: 0;
+      color: #e2e8f0;
+      font-size: 11.5pt;
+      max-width: 90%;
+    }
+
+    .meta-bar {
+      display: flex;
+      gap: 20px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 9.5pt;
+      color: #cbd5e1;
+    }
+
+    .meta-item strong {
+      color: #ffffff;
+    }
+
+    /* Section Headings */
+    h2 {
+      font-size: 14pt;
+      font-weight: 800;
+      color: #091338;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-top: 28px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .sec-num {
+      background: #1230C4;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      font-size: 10pt;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    h3 {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0 0 10px 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 12px 0 18px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      font-size: 9.5pt;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #1e293b;
+      font-weight: 700;
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    /* Code Blocks & Inline Code */
+    code {
+      font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+      font-size: 9pt;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background: #0b1120;
+      color: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+      font-size: 8.5pt;
+      line-height: 1.45;
+      overflow-x: hidden;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #1e293b;
+      margin: 10px 0 14px 0;
+    }
+
+    pre .kw { color: #f472b6; font-weight: 600; }
+    pre .fn { color: #60a5fa; }
+    pre .str { color: #34d399; }
+    pre .cm { color: #94a3b8; font-style: italic; }
+    pre .num { color: #fbbf24; }
+    pre .prop { color: #38bdf8; }
+
+    /* Callout Boxes */
+    .callout {
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 12px 0 16px 0;
+      font-size: 9.5pt;
+      display: flex;
+      gap: 12px;
+    }
+
+    .callout.info {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      color: #1e3a8a;
+    }
+
+    .callout.warning {
+      background: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      color: #92400e;
+    }
+
+    .callout.success {
+      background: #ecfdf5;
+      border-left: 4px solid #10b981;
+      color: #065f46;
+    }
+
+    .callout-icon {
+      font-size: 14pt;
+      line-height: 1;
+    }
+
+    .callout-body {
+      flex: 1;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+      font-size: 10pt;
+    }
+
+    /* Diagram / Flow Visual */
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0 20px 0;
+    }
+
+    .flow-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      position: relative;
+    }
+
+    .flow-card .num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1230C4;
+      color: #ffffff;
+      font-size: 9pt;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .flow-card .title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .flow-card .desc {
+      font-size: 8pt;
+      color: #64748b;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    /* Page Breaks */
+    .page-break {
+      page-break-before: always;
+    }
+
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+
+    /* Tag badges */
+    .tag {
+      display: inline-block;
+      font-size: 7.5pt;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .tag-blue { background: #dbeafe; color: #1e40af; }
+    .tag-green { background: #dcfce7; color: #166534; }
+    .tag-purple { background: #f3e8ff; color: #6b21a8; }
+    .tag-amber { background: #fef3c7; color: #92400e; }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+      margin-top: 24px;
+      font-size: 8pt;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER / HEADER -->
+  <div class="header-banner">
+    <div class="badge-pill">Merchant Integration Guide • v2.0</div>
+    <h1>KuickPay Embedded Checkout</h1>
+    <p>Complete guide for integrating seamless Modal and Inline card payments directly within your web store.</p>
+    <div class="meta-bar">
+      <div class="meta-item">Target Audience: <strong>Merchant Engineers & Developers</strong></div>
+      <div class="meta-item">Format: <strong>Embedded Iframe + Universal JS SDK</strong></div>
+      <div class="meta-item">Security: <strong>HMAC SHA-256 Signed</strong></div>
+    </div>
+  </div>
+
+  <!-- 1. OVERVIEW -->
+  <h2><span class="sec-num">1</span> Overview & Architecture</h2>
+  <p>
+    KuickPay <strong>Embedded Checkout</strong> allows merchants to take customer payments directly inside their website without a disruptive full-page browser redirect. Customers remain in your storefront while entering payment credentials inside a secure, PCI-compliant KuickPay iframe.
+  </p>
+
+  <div class="flow-steps">
+    <div class="flow-card">
+      <div class="num">1</div>
+      <div class="title">Create Session</div>
+      <p class="desc">Your server signs order data and creates a session via KuickPay API.</p>
+    </div>
+    <div class="flow-card">
+      <div class="num">2</div>
+      <div class="title">Open Embed</div>
+      <p class="desc">Frontend launches checkout in a Modal Dialog or Inline Container.</p>
+    </div>
+    <div class="flow-card">
+      <div class="num">3</div>
+      <div class="title">Customer Pays</div>
+      <p class="desc">Customer enters card securely inside the KuickPay iframe.</p>
+    </div>
+    <div class="flow-card">
+      <div class="num">4</div>
+      <div class="title">Verify & Confirm</div>
+      <p class="desc">Frontend gets event; your server securely confirms with KuickPay Status API.</p>
+    </div>
+  </div>
+
+  <table class="avoid-break">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Embed Mode</th>
+        <th style="width: 45%;">Behavior & Appearance</th>
+        <th style="width: 30%;">Recommended Use Case</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Modal (Popup)</strong> <span class="tag tag-blue">Default</span></td>
+        <td>Renders an overlay dialog centered over your page with background blur. Closable by customer via ✕ button or Escape key.</td>
+        <td>Standard e-commerce checkouts, Quick Buy buttons, cart drawers.</td>
+      </tr>
+      <tr>
+        <td><strong>Inline (On-Page)</strong> <span class="tag tag-green">Seamless</span></td>
+        <td>Embeds smoothly into a designated <code>&lt;div&gt;</code> element on your page. Automatically adapts height via resize events.</td>
+        <td>Single-page checkouts, multi-step checkout accordions, kiosk displays.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 2. PREREQUISITES & URLS -->
+  <h2><span class="sec-num">2</span> Credentials & Environments</h2>
+  <p>KuickPay provides each merchant with four key integration parameters:</p>
+  <ul>
+    <li><strong>Company ID:</strong> Your unique merchant identifier (e.g. <code>10010</code>).</li>
+    <li><strong>Secured Key:</strong> A secret 256-bit key used to compute request HMAC signatures and HTTP Basic Auth.</li>
+    <li><strong>API Base URL:</strong> Backend gateway endpoint for session creation & transaction verification.</li>
+    <li><strong>Checkout Base URL:</strong> Frontend domain hosting the embedded checkout form (<code>/embed/[sessionId]</code>) and the universal SDK script (<code>kuickpay-checkout.js</code>).</li>
+  </ul>
+
+  <table class="avoid-break">
+    <thead>
+      <tr>
+        <th>Environment</th>
+        <th>API Base URL (<code>baseUrl</code>)</th>
+        <th>Checkout Base URL (<code>checkoutUrl</code>)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Local Development</strong></td>
+        <td><code>https://prod-api.kuickpay.com</code></td>
+        <td><code>http://localhost:3000</code></td>
+      </tr>
+      <tr>
+        <td><strong>UAT Sandbox</strong></td>
+        <td><code>https://sandbox-api.kuickpay.com</code></td>
+        <td><code>https://testcheckout.kuickpay.com</code></td>
+      </tr>
+      <tr>
+        <td><strong>Production</strong></td>
+        <td><code>https://prod-api.kuickpay.com</code></td>
+        <td><code>https://checkout.kuickpay.com</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- 3. STEP 1: CREATE PAYMENT SESSION -->
+  <h2><span class="sec-num">3</span> Step 1: Create Payment Session (Backend)</h2>
+  <p>
+    When a customer clicks checkout, your backend server must create a session.
+    <strong>Never perform session creation directly in client-side code</strong>, as doing so would expose your secret key.
+  </p>
+
+  <p><strong>Endpoint:</strong> <code>POST {API_BASE_URL}/checkout/api/session</code></p>
+
+  <div class="callout info">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-body">
+      <div class="callout-title">HTTP Basic Authentication</div>
+      Send header <code>Authorization: Basic base64(CompanyID:SecuredKey)</code> with <code>Content-Type: application/json</code>.
+    </div>
+  </div>
+
+  <h3>Payload Fields</h3>
+  <table class="avoid-break">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Field</th>
+        <th style="width: 15%;">Type</th>
+        <th style="width: 60%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>companyid</code></td>
+        <td>string</td>
+        <td>Your KuickPay Company ID (e.g., <code>"10010"</code>).</td>
+      </tr>
+      <tr>
+        <td><code>orderid</code></td>
+        <td>string</td>
+        <td>Unique order identifier generated by your system (e.g. <code>"ORD-1718902"</code>).</td>
+      </tr>
+      <tr>
+        <td><code>amount</code></td>
+        <td>string</td>
+        <td>Order total formatted to 2 decimals (e.g. <code>"250.00"</code>).</td>
+      </tr>
+      <tr>
+        <td><code>amountPayable</code></td>
+        <td>string</td>
+        <td>Net payable amount including tax/shipping (e.g. <code>"250.00"</code>).</td>
+      </tr>
+      <tr>
+        <td><code>currency</code></td>
+        <td>string</td>
+        <td>Currency code: <code>"AED"</code> (United Arab Emirates Dirham) or <code>"PKR"</code>.</td>
+      </tr>
+      <tr>
+        <td><code>timestamp</code></td>
+        <td>string</td>
+        <td>Current ISO 8601 string (e.g. <code>"2026-11-16T12:00:00.000Z"</code>).</td>
+      </tr>
+      <tr>
+        <td><code>transactiondescription</code></td>
+        <td>string</td>
+        <td>Brief description of items purchased.</td>
+      </tr>
+      <tr>
+        <td><code>returnurl</code></td>
+        <td>string</td>
+        <td>Your storefront return URL (used if fallback redirect is triggered).</td>
+      </tr>
+      <tr>
+        <td><code>signature</code></td>
+        <td>string</td>
+        <td>Base64-encoded HMAC-SHA256 signature of canonical string.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Signature Calculation</h3>
+  <p>Assemble the canonical string in the exact order below, separated by pipes (<code>|</code>), and hash it with your <code>SecuredKey</code>:</p>
+  <pre><code><span class="cm">// 1. Construct canonical string:</span>
+<span class="kw">const</span> canonical = <span class="str">`${companyid}|${orderid}|${amount}|${amountPayable}|${timestamp}`</span>;
+
+<span class="cm">// 2. Hash using HMAC SHA256 and convert to Base64:</span>
+<span class="kw">const</span> signature = CryptoJS.HmacSHA256(canonical, securedKey).toString(CryptoJS.enc.Base64);</code></pre>
+
+  <h3>Session API Response</h3>
+  <pre><code>{
+  <span class="prop">"success"</span>: <span class="kw">true</span>,
+  <span class="prop">"responseData"</span>: {
+    <span class="prop">"sessionID"</span>: <span class="str">"KP-SESS-9A82FC-2026"</span>,
+    <span class="prop">"redirectURL"</span>: <span class="str">"https://checkout.kuickpay.com/embed/KP-SESS-9A82FC-2026"</span>,
+    <span class="prop">"companyID"</span>: <span class="str">"10010"</span>
+  }
+}</code></pre>
+
+  <p>Return the <code>sessionID</code> to your frontend code to trigger the embedded checkout.</p>
+
+  <div class="page-break"></div>
+
+  <!-- 4. STEP 2: EMBEDDED CHECKOUT CLIENT INTEGRATION -->
+  <h2><span class="sec-num">4</span> Step 2: Embedded Checkout (Client-Side)</h2>
+  <p>Merchants can implement the embedded checkout using either the <strong>Universal JS SDK</strong> or <strong>React Components</strong>.</p>
+
+  <h3>Option A: Universal JavaScript SDK (Any Website / HTML)</h3>
+  <p>Include the lightweight SDK script in your page <code>&lt;head&gt;</code> or layout:</p>
+  <pre><code>&lt;<span class="kw">script</span> <span class="prop">src</span>=<span class="str">"https://checkout.kuickpay.com/kuickpay-checkout.js"</span>&gt;&lt;/<span class="kw">script</span>&gt;</code></pre>
+
+  <p><strong>1. Modal Popup Mode:</strong></p>
+  <pre><code><span class="cm">// Trigger when user clicks your "Place Order" button</span>
+KuickPay.<span class="fn">open</span>({
+  <span class="prop">baseUrl</span>: <span class="str">'https://checkout.kuickpay.com'</span>,
+  <span class="prop">sessionId</span>: sessionID,            <span class="cm">// Received from Step 1</span>
+  <span class="prop">mode</span>: <span class="str">'modal'</span>,                    <span class="cm">// 'modal' popup dialog</span>
+  <span class="prop">closeOnBackdrop</span>: <span class="kw">true</span>,
+  <span class="prop">closeOnEscape</span>: <span class="kw">true</span>,
+  <span class="prop">onReady</span>: <span class="kw">function</span>() {
+    console.log(<span class="str">'Checkout iframe loaded successfully'</span>);
+  },
+  <span class="prop">onSuccess</span>: <span class="kw">function</span>(data) {
+    <span class="cm">// data: { orderID, transactionID, amount, currency, responseCode: "00" }</span>
+    window.location.href = <span class="str">`/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`</span>;
+  },
+  <span class="prop">onFailed</span>: <span class="kw">function</span>(error) {
+    alert(<span class="str">'Payment declined: '</span> + (error.message || <span class="str">'Please try again'</span>));
+  },
+  <span class="prop">onClose</span>: <span class="kw">function</span>() {
+    console.log(<span class="str">'Customer dismissed modal'</span>);
+  }
+});</code></pre>
+
+  <p><strong>2. Inline Embed Mode:</strong></p>
+  <pre><code>&lt;<span class="kw">div</span> <span class="prop">id</span>=<span class="str">"kuickpay-mount-point"</span> <span class="prop">style</span>=<span class="str">"min-height: 620px;"</span>&gt;&lt;/<span class="kw">div</span>&gt;
+
+&lt;<span class="kw">script</span>&gt;
+KuickPay.<span class="fn">open</span>({
+  <span class="prop">baseUrl</span>: <span class="str">'https://checkout.kuickpay.com'</span>,
+  <span class="prop">sessionId</span>: sessionID,
+  <span class="prop">mode</span>: <span class="str">'inline'</span>,
+  <span class="prop">target</span>: <span class="str">'#kuickpay-mount-point'</span>,   <span class="cm">// CSS selector for container</span>
+  <span class="prop">onSuccess</span>: <span class="kw">function</span>(data) {
+    window.location.href = <span class="str">`/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`</span>;
+  },
+  <span class="prop">onFailed</span>: <span class="kw">function</span>(error) {
+    alert(<span class="str">'Payment failed: '</span> + error.message);
+  }
+});
+&lt;/<span class="kw">script</span>&gt;</code></pre>
+
+  <h3>Option B: Pure React / Next.js Components</h3>
+  <p>Merchants using React or Next.js can drop ready-made JSX components into their component hierarchy without external script tags:</p>
+
+  <pre><code><span class="kw">import</span> KuickPayCheckoutModal <span class="kw">from</span> <span class="str">'@/app/components/KuickPayCheckoutModal'</span>;
+
+&lt;<span class="fn">KuickPayCheckoutModal</span>
+  <span class="prop">isOpen</span>={isModalOpen}
+  <span class="prop">sessionId</span>={sessionId}
+  <span class="prop">baseUrl</span>=<span class="str">"https://checkout.kuickpay.com"</span>
+  <span class="prop">onClose</span>={() =&gt; setIsModalOpen(<span class="kw">false</span>)}
+  <span class="prop">onSuccess</span>={(data) =&gt; {
+    setIsModalOpen(<span class="kw">false</span>);
+    window.location.href = <span class="str">`/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`</span>;
+  }}
+  <span class="prop">onFailed</span>={(err) =&gt; alert(err.message || <span class="str">'Payment failed'</span>)}
+/&gt;</code></pre>
+
+  <div class="page-break"></div>
+
+  <!-- 5. POSTMESSAGE EVENT REFERENCE -->
+  <h2><span class="sec-num">5</span> postMessage Event Protocol</h2>
+  <p>
+    The embedded iframe communicates bi-directionally with the merchant window using the browser <code>postMessage</code> standard.
+    All events originating from KuickPay carry <code>source: "kuickpay-checkout"</code>.
+  </p>
+
+  <table class="avoid-break">
+    <thead>
+      <tr>
+        <th style="width: 28%;">Event Type</th>
+        <th style="width: 32%;">When Triggered</th>
+        <th style="width: 40%;">Payload Structure</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>KUICKPAY_READY</code></td>
+        <td>Iframe rendered checkout form and is ready for customer input.</td>
+        <td><code>{ source, type: "KUICKPAY_READY" }</code></td>
+      </tr>
+      <tr>
+        <td><code>KUICKPAY_SUCCESS</code></td>
+        <td>Transaction authorized and successfully captured by 3DS gateway.</td>
+        <td><code>{ source, type: "KUICKPAY_SUCCESS", orderID, transactionID, amount, currency, responseCode: "00" }</code></td>
+      </tr>
+      <tr>
+        <td><code>KUICKPAY_FAILED</code></td>
+        <td>Card declined, 3DS failed, or insufficient balance.</td>
+        <td><code>{ source, type: "KUICKPAY_FAILED", message, responseCode }</code></td>
+      </tr>
+      <tr>
+        <td><code>KUICKPAY_CLOSE</code></td>
+        <td>Customer clicked close button or backdrop overlay.</td>
+        <td><code>{ source, type: "KUICKPAY_CLOSE" }</code></td>
+      </tr>
+      <tr>
+        <td><code>KUICKPAY_RESIZE</code></td>
+        <td>Checkout content height changed (Inline mode automatic adjustment).</td>
+        <td><code>{ source, type: "KUICKPAY_RESIZE", height: 680 }</code></td>
+      </tr>
+      <tr>
+        <td><code>KUICKPAY_ERROR</code></td>
+        <td>Session expired or network connectivity error occurred.</td>
+        <td><code>{ source, type: "KUICKPAY_ERROR", message }</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 6. STEP 4: VERIFY TRANSACTION STATUS -->
+  <h2><span class="sec-num">6</span> Step 3: Transaction Inquiry & Verification</h2>
+  <p>
+    <strong>Mandatory Security Step:</strong> Client-side events (such as <code>KUICKPAY_SUCCESS</code>) can theoretically be spoofed in a browser console.
+    Your backend server <strong>must always call the KuickPay Status API</strong> before releasing digital goods or fulfilling inventory.
+  </p>
+
+  <p><strong>Endpoint:</strong> <code>POST {API_BASE_URL}/checkout/api/status</code></p>
+  <p><strong>Authentication:</strong> <code>Authorization: Basic base64(CompanyID:SecuredKey)</code></p>
+
+  <pre><code><span class="cm">// Server-side verification request payload:</span>
+{
+  <span class="prop">"sessionID"</span>: <span class="str">"KP-SESS-9A82FC-2026"</span>,
+  <span class="prop">"redirectURL"</span>: <span class="str">"https://checkout.kuickpay.com/embed/KP-SESS-9A82FC-2026"</span>,
+  <span class="prop">"companyID"</span>: <span class="str">"10010"</span>
+}</code></pre>
+
+  <p><strong>Status API Response:</strong></p>
+  <pre><code>{
+  <span class="prop">"responseCode"</span>: <span class="str">"00"</span>,
+  <span class="prop">"responseDescription"</span>: <span class="str">"Transaction Successful"</span>,
+  <span class="prop">"transactionId"</span>: <span class="str">"TXN-2026-981240"</span>
+}</code></pre>
+
+  <div class="callout success">
+    <div class="callout-icon">✅</div>
+    <div class="callout-body">
+      <div class="callout-title">Order Confirmation Condition</div>
+      Mark order as paid only when <code>responseCode === "00"</code> is returned directly from the backend status API.
+    </div>
+  </div>
+
+  <!-- 7. SECURITY & GO-LIVE CHECKLIST -->
+  <h2><span class="sec-num">7</span> Security & Production Go-Live Checklist</h2>
+  <table class="avoid-break">
+    <thead>
+      <tr>
+        <th style="width: 8%;">Status</th>
+        <th style="width: 32%;">Item</th>
+        <th style="width: 60%;">Requirement</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align: center;">🔒</td>
+        <td><strong>Secured Key Protection</strong></td>
+        <td>Store <code>SecuredKey</code> in environment variables (e.g. <code>.env.production</code>) on backend. Never bundle in JS.</td>
+      </tr>
+      <tr>
+        <td style="text-align: center;">🛡️</td>
+        <td><strong>Message Origin Verification</strong></td>
+        <td>Check <code>event.data?.source === 'kuickpay-checkout'</code> on all postMessage listeners.</td>
+      </tr>
+      <tr>
+        <td style="text-align: center;">🔐</td>
+        <td><strong>HTTPS Everywhere</strong></td>
+        <td>Both your storefront and return URL must be served over valid TLS/HTTPS.</td>
+      </tr>
+      <tr>
+        <td style="text-align: center;">💵</td>
+        <td><strong>Amount Verification</strong></td>
+        <td>Verify returned amount matches the order amount stored in your database before fulfillment.</td>
+      </tr>
+      <tr>
+        <td style="text-align: center;">🚀</td>
+        <td><strong>Switch to Production URLs</strong></td>
+        <td>Point API to <code>prod-api.kuickpay.com</code> and Checkout to <code>checkout.kuickpay.com</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <div>KuickPay Checkout Gateway • Confidential for Merchant Technical Integration</div>
+    <div>Page 4 of 4 • KuickPay Technical Support: support@kuickpay.com</div>
+  </div>
+
+</body>
+</html>
+

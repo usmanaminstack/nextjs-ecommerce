@@ -7,7 +7,15 @@ This guide outlines the technical steps required to integrate the KuickPay Check
 Before starting, ensure you have the following credentials provided by KuickPay:
 - **Company ID**: Your unique merchant identifier.
 - **Secured Key**: A secret key used for request signing and authentication.
-- **Gateway Endpoint**: The base URL for the KuickPay API (Sandbox or Production).
+- **API Base URL**: The backend gateway endpoint for session creation & transaction inquiry.
+- **Checkout Base URL**: The frontend web application endpoint where the checkout iframe (`/embed/[sessionId]`) and SDK script (`kuickpay-checkout.js`) reside.
+
+### Base URLs Matrix
+| Environment | API Base URL (`baseUrl`) | Checkout Base URL (`checkoutUrl`) |
+| :--- | :--- | :--- |
+| **Local Dev** | `https://prod-api.kuickpay.com` (or API server) | `http://localhost:3000` (local `kuickpay-payments`) |
+| **UAT Sandbox** | `https://sandbox-api.kuickpay.com` | `https://testcheckout.kuickpay.com` |
+| **Production** | `https://prod-api.kuickpay.com` | `https://checkout.kuickpay.com` |
 
 ---
 
@@ -39,6 +47,7 @@ Content-Type: application/json
 | `orderid` | string | Unique order identifier from your system |
 | `amount` | string | Order amount (e.g., "1250.00") |
 | `amountPayable` | string | Total amount user should pay |
+| `currency` | string | Currency code: `"AED"` (default) or `"PKR"` |
 | `timestamp` | string | ISO 8601 formatted timestamp |
 | `transactiondescription` | string | Brief description of the order |
 | `returnurl` | string | Where to send the user after payment |
@@ -127,9 +136,114 @@ Returns the status details of the transaction. A `responseCode` of `"00"` indica
 }
 ```
 
+## 5. Embedded Checkout (Modal & Inline)
+
+Instead of sending users away with `window.location.href = redirectURL`, you can embed KuickPay directly on your site using either **Modal (Popup)** or **Inline (On-Page)** mode.
+
+### Option A: Using the Universal SDK (`kuickpay-checkout.js`)
+Include the SDK in your layout (`app/layout.js` or HTML `<head>`):
+```html
+<script src="https://checkout.kuickpay.com/kuickpay-checkout.js"></script>
+```
+*(Use `http://localhost:3000/kuickpay-checkout.js` during local testing)*
+
+#### 1. Modal Popup Mode
+```javascript
+KuickPay.open({
+  baseUrl: 'http://localhost:3000', // Or production checkout URL
+  sessionId: orderSessionId,        // Returned from Step 1
+  mode: 'modal',                    // 'modal' popup
+  onSuccess: function (data) {
+    // data: { orderID, transactionID, amount, currency, responseCode: "00" }
+    window.location.href = `/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`;
+  },
+  onFailed: function (error) {
+    alert('Payment failed: ' + error.message);
+  },
+  onClose: function () {
+    console.log('Customer closed the checkout modal');
+  }
+});
+```
+
+#### 2. Inline Embed Mode
+Embeds the iframe inside an HTML container on your page:
+```html
+<div id="kuickpay-container" style="min-height: 620px;"></div>
+
+<script>
+KuickPay.open({
+  baseUrl: 'http://localhost:3000',
+  sessionId: orderSessionId,
+  mode: 'inline',
+  target: '#kuickpay-container',
+  onSuccess: function (data) {
+    window.location.href = `/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`;
+  },
+  onFailed: function (error) {
+    alert('Payment failed: ' + error.message);
+  }
+});
+</script>
+```
+
+---
+
+### Option B: Using React Components (Pure Next.js / React)
+
+#### 1. Modal Component (`<KuickPayCheckoutModal />`)
+```jsx
+import KuickPayCheckoutModal from '@/app/components/KuickPayCheckoutModal';
+
+<KuickPayCheckoutModal
+  isOpen={isModalOpen}
+  sessionId={sessionId}
+  baseUrl="http://localhost:3000"
+  onClose={() => setIsModalOpen(false)}
+  onSuccess={(data) => {
+    window.location.href = `/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`;
+  }}
+  onFailed={(err) => {
+    alert(err.message || 'Payment failed');
+  }}
+/>
+```
+
+#### 2. Inline Component (`<KuickPayCheckoutInline />`)
+Embeds directly into your layout/card with automatic iframe height resizing:
+```jsx
+import KuickPayCheckoutInline from '@/app/components/KuickPayCheckoutInline';
+
+<KuickPayCheckoutInline
+  sessionId={sessionId}
+  baseUrl="http://localhost:3000"
+  onClose={() => setInlineVisible(false)}
+  onSuccess={(data) => {
+    window.location.href = `/kuickpay-return?orderID=${data.orderID}&transactionID=${data.transactionID}&status=00`;
+  }}
+  onFailed={(err) => {
+    alert(err.message || 'Payment failed');
+  }}
+/>
+```
+
+---
+
+## 6. postMessage Event Reference
+All iframe events dispatch the following JSON payload to `window.parent`:
+
+| Event Name | Description | Payload |
+|---|---|---|
+| `KUICKPAY_READY` | Iframe finished initial rendering | `{ source: "kuickpay-checkout", type: "KUICKPAY_READY" }` |
+| `KUICKPAY_SUCCESS` | Payment processed and approved | `{ source: "kuickpay-checkout", type: "KUICKPAY_SUCCESS", orderID, transactionID, amount, currency, responseCode: "00" }` |
+| `KUICKPAY_FAILED` | Card declined or transaction rejected | `{ source: "kuickpay-checkout", type: "KUICKPAY_FAILED", message }` |
+| `KUICKPAY_CLOSE` | Customer clicked close / backdrop | `{ source: "kuickpay-checkout", type: "KUICKPAY_CLOSE" }` |
+| `KUICKPAY_ERROR` | Session or network failure | `{ source: "kuickpay-checkout", type: "KUICKPAY_ERROR", message }` |
+
 ---
 
 ## Security Best Practices
 - **Never expose your Secured Key** on the frontend. Perform session creation and transaction inquiry on your backend server.
 - **Validate the Amount** on the return page to ensure it matches your records.
 - **Use HTTPS** for all API communication.
+
